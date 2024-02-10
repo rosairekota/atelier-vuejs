@@ -1,11 +1,30 @@
 <template>
     <div>
-     <h1> home</h1>
+     <h1> Mes articles:</h1>
+     <div v-if="isLoading">
+        <span class="spinner text-white bg-blue-600 p-3 rounded-xl h-5 w-5 animate-pulse"> Chargement...</span>
+     </div>
+    <div v-else>
+        <ul v-for="(post, index) in posts" :key="index">
+        <li>{{  post.title }}</li>
+     </ul>
+    </div>
     </div>
  </template>
  
  <script setup lang="ts">
- 
+ import { ref, onMounted } from 'vue';
+  let posts = ref<any>([])
+  let isLoading= ref<any>(false)
+
+  onMounted(async ()=>{
+    isLoading.value = true;
+   posts.value = await (await fetch('https://jsonplaceholder.typicode.com/posts')).json()
+
+   isLoading.value = false;
+
+})
+
  </script>
  
  <style>

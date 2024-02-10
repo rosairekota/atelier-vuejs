@@ -1,29 +1,34 @@
 <template>
-   <div>
-
-    <h1>articles</h1>
-    <div v-if="ess.length===0">
-      chargement de donnes...
-    </div>
-    <div v-else>
-        <div>
-            le nombre total des ess 
-            {{  ess.length}}
-        </div>
-        <ul v-for="(item, index) in ess" :key="index">
-          <li>{{ item.codeEtablissementSoinSante}}</li>
-        </ul>
-    </div>
+  <div>
+   <h1> Mes articles:</h1>
+   <div v-if="isLoading">
+      <span class="spinner text-white bg-blue-600 p-3 rounded-xl h-5 w-5 animate-pulse"> Chargement...</span>
    </div>
+  <div v-else>
+      <ul v-for="(post, index) in posts" :key="index">
+      <li>{{  post.title }}</li>
+   </ul>
+  </div>
+  </div>
 </template>
 
 <script setup lang="ts">
-import {ref, onMounted, reactive} from 'vue';
-import axios from "axios"
-let ess = ref([])
-onMounted(async()=>{
-  ess.value = (await axios.get('https://ussd.anicns.cd:9443/territorial/ess/')).data
-   console.log("mes data",ess)
+import { ref, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
+let posts = ref<any>([])
+let isLoading= ref<any>(false)
+let isAuhtenticated = ref<any>(false)
+const router = useRouter()
+
+onMounted(async ()=>{
+  isLoading.value = true;
+ posts.value = await (await fetch('https://jsonplaceholder.typicode.com/posts')).json()
+  let token = sessionStorage.getItem('token');
+  console.log("token", token)
+  if (token ==='' || token === undefined|| token===null) {
+    router.push('/connexion')
+  }
+ isLoading.value = false;
 
 })
 
